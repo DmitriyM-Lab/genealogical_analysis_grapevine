@@ -17,7 +17,7 @@ Generates a UPGMA hierarchical clustering dendrogram based on Identity-by-State 
 ## 06_connection_analysis
 Parses the IBD relationship dataset to count the number of valid genetic connections (edges) for each cultivar. It visually represents this data as a custom stacked bar chart using ggplot2, displaying total connections on the left and the proportion of specific relationship types (clones, full sibs, etc.) on the right.
 
-References
+### References
 
 Manichaikul, A., Mychaleckyj, J. C., Rich, S. S., Daly, K., Sale, M., & Chen, W.-M. (2010). Robust relationship inference in genome-wide association studies. Bioinformatics, 26(22), 2867–2873. https://doi.org/10.1093/bioinformatics/btq559
 
