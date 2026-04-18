@@ -1,7 +1,7 @@
 # Genealogical Analysis of Grapevine Cultivars R scripts
 An interactive R-based workflow for analyzing SNP profiles of grapevine cultivars. Built on top of the `SNPRelate` package (Zheng et al., 2012), this pipeline covers:
 * VCF to GDS conversion & LD pruning
-* Individual Heterozygosity calculation (Ho & He)
+* Individual Heterozygosity calculation `(Ho & He)`
 * Principal Component Analysis (PCA)
 * IBD & Kinship estimation (KING-robust)
 * UPGMA Clustering & Network visualization
