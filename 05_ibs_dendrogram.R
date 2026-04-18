@@ -154,9 +154,9 @@ draw_dendrogram <- function() {
 }
 
 # --- 8. Export Plot ---
-output_tiff <- "Dendrogram_IBS_Kinship.tiff"
-tiff(output_tiff, width = 20, height = 14, units = "in", res = 600, compression = "lzw", bg = "white")
+output_png <- "Dendrogram_IBS_Kinship.png"
+png(output_png, width = 20, height = 14, units = "in", res = 600, bg = "white")
 draw_dendrogram()
 dev.off()
 
-cat("SUCCESS! Dendrogram saved as:", output_tiff, "\n")
+cat("SUCCESS! Dendrogram saved as:", output_png, "\n")
