@@ -1,4 +1,27 @@
 # Genealogical Analysis of Grapevine Cultivars
+## Bioinformatics Pipeline for Variant Calling
+This is the bioinformatics pipeline used for mapping reads to a reference genome, post-processing, variant calling, and subsequent filtration.
+### 1. Reference Genome Indexing
+#### Create an index for BWA-MEM2
+`bwa-mem2 index REFERENCE.fasta`
+#### Create a fasta index (faidx) for SAMtools and BCFtools
+`samtools faidx REFERENCE.fasta`
+#### 2. Read Mapping and Post-processing
+##### 2.1. Read Mapping
+Aligning cleaned paired-end reads to the reference genome using bwa-mem2
+`bwa-mem2 mem \
+  -M -t <THREADS> \
+  -R '@RG\tID:<SAMPLE_ID>\tSM:<SAMPLE_NAME>\tPL:ILLUMINA' \
+  REFERENCE.fasta \
+  SAMPLE_R1_clean.fastq.gz \
+  SAMPLE_R2_clean.fastq.gz | \
+samtools view -@ <THREADS> -b > SAMPLE.bam`
+
+
+
+
+
+
 An interactive R-based workflow for analyzing SNP profiles of grapevine cultivars. Built on top of the SNPRelate package (Zheng et al., 2012), this pipeline covers:
 * VCF to GDS conversion & LD pruning
 * Individual Heterozygosity calculation (Ho & He)
