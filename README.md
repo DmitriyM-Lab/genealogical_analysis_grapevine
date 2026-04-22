@@ -1,22 +1,24 @@
 # Genealogical Analysis of Grapevine Cultivars
 ## Bioinformatics Pipeline for Variant Calling
 This is the bioinformatics pipeline used for mapping reads to a reference genome, post-processing, variant calling, and subsequent filtration.
-### 1. Reference Genome Indexing
-#### Create an index for BWA-MEM2
+## 1. Reference Genome Indexing
 `bwa-mem2 index REFERENCE.fasta`
-#### Create a fasta index (faidx) for SAMtools and BCFtools
 `samtools faidx REFERENCE.fasta`
-#### 2. Read Mapping and Post-processing
-##### 2.1. Read Mapping
-Aligning cleaned paired-end reads to the reference genome using bwa-mem2
-`bwa-mem2 mem \
-  -M -t <THREADS> \
-  -R '@RG\tID:<SAMPLE_ID>\tSM:<SAMPLE_NAME>\tPL:ILLUMINA' \
-  REFERENCE.fasta \
-  SAMPLE_R1_clean.fastq.gz \
-  SAMPLE_R2_clean.fastq.gz | \
-samtools view -@ <THREADS> -b > SAMPLE.bam`
-
+## 2. Read Mapping and Post-processing
+### 2.1. Read Mapping
+`bwa-mem2 mem -M -t <THREADS> -R '@RG\tID:<SAMPLE_ID>\tSM:<SAMPLE_NAME>\tPL:ILLUMINA' REFERENCE.fasta SAMPLE_R1_clean.fastq.gz SAMPLE_R2_clean.fastq.gz | samtools view -@ <THREADS> -b > SAMPLE.bam`
+### 2.2. BAM File Preparation and Sorting
+`samtools collate -@ <THREADS> -Ou SAMPLE.bam | samtools fixmate -@ <THREADS> -m - - | samtools sort -@ <THREADS> -o SAMPLE_sorted.bam -`
+### 2.3. PCR Duplicate Marking
+`samtools markdup -@ <THREADS> -d 100 SAMPLE_sorted.bam SAMPLE_markdup.bam`
+### 2.4. Indexing and Mapping Statistics
+`samtools index -@ <THREADS> -b SAMPLE_markdup.bam`
+`samtools flagstat -@ <THREADS> SAMPLE_markdup.bam > SAMPLE_mapping_stats.txt`
+## 3. Variant Calling
+`bcftools mpileup --threads <THREADS> -a FORMAT/AD,FORMAT/DP,FORMAT/SP,INFO/AD -f REFERENCE.fasta -R TARGET_PANEL_REGIONS.txt *_markdup.bam | bcftools call --threads <THREADS> -f GQ,GP -m -Oz -o ALL_CULTIVARS_RAW.vcf.gz`
+## 4. Variant Filtering
+`bcftools filter -Ou -e "INFO/DP>2.5*AVG(INFO/DP) || MQ<30 || QUAL<30 || SP>10" ALL_CULTIVARS_RAW.vcf.gz | bcftools view -Ou -M 2 -V indels | bcftools filter -Ou -S . -e "FMT/GQ<20 || FMT/DP<5" | bcftools filter -Oz -e "F_MISSING>0.2" > ALL_CULTIVARS_FILTERED.vcf.gz`
+`bcftools stats -s - ALL_CULTIVARS_FILTERED.vcf.gz > ALL_CULTIVARS_FILTERED_STATS.txt`
 
 
 
